@@ -1,0 +1,97 @@
+## 설치
+ -Python 3.9 이상
+ -Java 8 이상 (Spark가 Java 기반이므로 필요)
+ -PySpark 패키지
+
+1. 자바설치
+   - JAVA 설치 방법
+    : https://adoptium.net/ >> 기타다운로드
+      (파이썬 3.10이하 버전이면 JDK 8, 11, 17이 안정적임) >> 11버전으로 설치
+
+2. 환경변수 설정
+
+- JAVA_HOME → JAVA_HOME = C:\Program Files\Eclipse Adoptium\jdk-11.0.29.7-hotspot
+
+- Path → %JAVA_HOME%\bin 추가
+
+- cmd창 새로 열고 환경변수 적용됐는지 확인
+  >> echo %JAVA_HOME%
+  >> echo %PATH%
+       : C:\Program Files\Eclipse Adoptium\jdk-11.0.29.7-hotspot\bin 있어야함
+
+3. pip install pyspark==3.5 ( 가상환경에서 설치)
+   pip show pyspark
+   python -c "import pyspark; print(pyspark.__version__)"
+
+4. mongodb 커넥터 설치
+   : https://mvnrepository.com/artifact/org.mongodb.spark/mongo-spark-connector_2.12/10.2.0
+  : Files >> jar 클릭
+  : path -> C:\spark_jars\mongo-spark-connector_2.12-10.2.0.jar
+  
+  : 세션에 지정
+  from pyspark.sql import SparkSession
+
+spark = SparkSession.builder \
+    .appName("MongoDB_Spark_Test") \
+    .master("local[*]") \
+    .config("spark.jars", "C:/spark_jars/mongo-spark-connector_2.12-10.2.0.jar") \
+    .config("spark.mongodb.read.connection.uri", "mongodb://127.0.0.1:27017/testdb.students") \
+    .config("spark.mongodb.write.connection.uri", "mongodb://127.0.0.1:27017/testdb.students_result") \
+    .getOrCreate()
+
+5. Winutil.exe 다운 하여 아래 경로에 삽입
+  : C:\\hadoop\\bin
+   >>  spark가 로컬 파일 시스템을 다루기 위해 Hadoop을 호출하기 위한 Hadoop 실행 파일
+   >> Spark 3.5.0 사용 중이라면 hadoop-3.3.6/bin/winutils.exe
+
+  : setx HADOOP_HOME "C:\hadoop"
+    setx PATH "%PATH%;C:\hadoop\bin"
+
+6. 설치 라이브러리
+  pip install pyspark
+pip install pymongo
+pip install findspark
+pip install pyspark[sql]
+pip install pyspark[mllib]
+
+
+
+
+--------------------------------------------------------------------------------------------------------------------
+# 1. Java 설치 (OpenJDK)
+# 설치 후 환경변수 설정 (JAVA_HOME)
+setx JAVA_HOME "C:\Program Files\Java\jdk1.8.0_361"
+setx PATH "%JAVA_HOME%\bin;%PATH%"
+
+# 2. Python 설치 (Anaconda 권장)
+# Anaconda 설치 후 conda 환경 만들기
+conda create -n pyspark_env python=3.10
+conda activate pyspark_env
+
+# 3. PySpark 설치
+pip install pyspark
+
+# 4. Jupyter Notebook 설치 (선택)
+pip install notebook
+
+
+--------------------------------------------------------------------------------------------------------------------
+
+
+2. PySpark 개념 설명
+
+- RDD(Resilient Distributed Dataset)
+  :Spark의 기본 데이터 단위
+  :분산 처리 가능, 변환(transformations)과 액션(actions)으로 연산
+- DataFrame
+  :구조화된 데이터 처리
+  :SQL처럼 필터링, 그룹화, 집계 가능
+- SparkSession
+  :PySpark의 진입점
+  :DataFrame, SQL, ML 등 모든 기능 접근 가능
+- MLlib
+  :PySpark의 머신러닝 라이브러리
+  :분산 학습 가능, Python scikit-learn과 유사한 API 제공
+- MongoDB 연동
+  :Spark → MongoDB 읽기/쓰기 가능
+  :대규모 데이터 분석 후 DB 저장에 활용
